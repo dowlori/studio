@@ -1,0 +1,1200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WARP-Style Scroll Effects</title>
+    
+    <!-- GSAP CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/TextPlugin.min.js"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --primary: #7B2CBF;
+            --dark: #001233;
+            --light: #f8fafc;
+            --accent: #C77DFF;
+            --purple: #9D4EDD;
+            --cyan: #5A189A;
+            --blue-dark: #00043A;
+            --blue-medium: #002466;
+            --purple-dark: #2D1E80;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--dark);
+            color: var(--light);
+            overflow-x: hidden;
+            cursor: default;
+        }
+        
+        /* Background Effects Container */
+        .background-effects {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+        
+        /* Animated Gradient Orbs */
+        .gradient-orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(60px);
+            opacity: 0.6;
+            animation: float 20s infinite ease-in-out;
+        }
+        
+        .orb-1 {
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(90, 24, 154, 0.8) 0%, rgba(90, 24, 154, 0) 70%);
+            top: -200px;
+            left: -200px;
+            animation-delay: 0s;
+        }
+        
+        .orb-2 {
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(199, 125, 255, 0.8) 0%, rgba(199, 125, 255, 0) 70%);
+            bottom: -150px;
+            right: -150px;
+            animation-delay: 5s;
+        }
+        
+        .orb-3 {
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(123, 44, 191, 0.8) 0%, rgba(123, 44, 191, 0) 70%);
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            animation-delay: 10s;
+        }
+        
+        .orb-4 {
+            width: 350px;
+            height: 350px;
+            background: radial-gradient(circle, rgba(157, 78, 221, 0.8) 0%, rgba(157, 78, 221, 0) 70%);
+            top: 60%;
+            left: 10%;
+            animation-delay: 15s;
+        }
+        
+        @keyframes float {
+            0%, 100% {
+                transform: translate(0, 0) scale(1);
+            }
+            25% {
+                transform: translate(100px, -100px) scale(1.1);
+            }
+            50% {
+                transform: translate(-100px, -200px) scale(0.9);
+            }
+            75% {
+                transform: translate(-200px, 100px) scale(1.05);
+            }
+        }
+        
+        /* Geometric Shapes */
+        .geometric-shape {
+            position: absolute;
+            opacity: 0.1;
+            border: 2px solid rgba(123, 44, 191, 0.3);
+        }
+        
+        .shape-square {
+            width: 200px;
+            height: 200px;
+            top: 20%;
+            right: 15%;
+            animation: rotate 30s linear infinite;
+        }
+        
+        .shape-triangle {
+            width: 0;
+            height: 0;
+            border-left: 100px solid transparent;
+            border-right: 100px solid transparent;
+            border-bottom: 173px solid rgba(157, 78, 221, 0.2);
+            bottom: 30%;
+            left: 20%;
+            animation: rotate 25s linear infinite reverse;
+        }
+        
+        .shape-hexagon {
+            width: 150px;
+            height: 86px;
+            background: rgba(90, 24, 154, 0.1);
+            position: absolute;
+            top: 70%;
+            right: 40%;
+            animation: rotate 35s linear infinite;
+        }
+        
+        .shape-hexagon:before {
+            content: "";
+            position: absolute;
+            top: -43px;
+            left: 0;
+            width: 0;
+            height: 0;
+            border-left: 75px solid transparent;
+            border-right: 75px solid transparent;
+            border-bottom: 43px solid rgba(90, 24, 154, 0.1);
+        }
+        
+        .shape-hexagon:after {
+            content: "";
+            position: absolute;
+            bottom: -43px;
+            left: 0;
+            width: 0;
+            height: 0;
+            border-left: 75px solid transparent;
+            border-right: 75px solid transparent;
+            border-top: 43px solid rgba(90, 24, 154, 0.1);
+        }
+        
+        @keyframes rotate {
+            from {
+                transform: rotate(0deg);
+            }
+            to {
+                transform: rotate(360deg);
+            }
+        }
+        
+        /* Particle Grid */
+        .particle-grid {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+        }
+        
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: rgba(157, 78, 221, 0.5);
+            border-radius: 50%;
+            animation: twinkle 3s infinite;
+        }
+        
+        @keyframes twinkle {
+            0%, 100% {
+                opacity: 0;
+                transform: scale(0.5);
+            }
+            50% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+        
+        /* Main Content Wrapper */
+        .content-wrapper {
+            position: relative;
+            z-index: 1;
+        }
+        
+        /* Custom Cursor */
+        .cursor {
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--primary);
+            border-radius: 50%;
+            position: fixed;
+            pointer-events: none;
+            transition: transform 0.1s ease;
+            z-index: 9999;
+            mix-blend-mode: difference;
+        }
+        
+        .cursor-follower {
+            width: 40px;
+            height: 40px;
+            background: rgba(123, 44, 191, 0.1);
+            border-radius: 50%;
+            position: fixed;
+            pointer-events: none;
+            transition: transform 0.3s ease;
+            z-index: 9998;
+        }
+        
+        /* Smooth Scroll */
+        html {
+            scroll-behavior: smooth;
+        }
+        
+        /* Progress Bar */
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            z-index: 1000;
+            transform-origin: left;
+            transform: scaleX(0);
+        }
+        
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 20px 5%;
+            background: rgba(0, 18, 51, 0.8);
+            backdrop-filter: blur(10px);
+            z-index: 999;
+            transition: all 0.3s ease;
+        }
+        
+        nav.scrolled {
+            padding: 15px 5%;
+            background: rgba(0, 18, 51, 0.95);
+        }
+        
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 24px;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 30px;
+            list-style: none;
+        }
+        
+        .nav-links a {
+            color: var(--light);
+            text-decoration: none;
+            position: relative;
+            transition: color 0.3s ease;
+        }
+        
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--primary);
+            transition: width 0.3s ease;
+        }
+        
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+        
+        /* Hero Section with Side Images */
+        .hero {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero-content {
+            text-align: center;
+            z-index: 2;
+            max-width: 800px;
+            padding: 0 20px;
+        }
+        
+        .hero h1 {
+            font-size: clamp(3rem, 10vw, 7rem);
+            font-weight: 900;
+            line-height: 0.9;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+        
+        .hero h1 span {
+            display: inline-block;
+        }
+        
+        .hero-subtitle {
+            font-size: clamp(1rem, 3vw, 1.5rem);
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        
+        /* Side Images */
+        .side-image {
+            position: absolute;
+            width: 400px;
+            height: 500px;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+        
+        .side-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .side-image-left {
+            left: -100px;
+            top: 20%;
+            transform: rotate(-5deg);
+            background: linear-gradient(135deg, #2D1E80, #5A189A);
+        }
+        
+        .side-image-right {
+            right: -100px;
+            bottom: 10%;
+            transform: rotate(5deg);
+            background: linear-gradient(135deg, #7B2CBF, #9D4EDD);
+        }
+        
+        /* Floating Side Elements */
+        .floating-element {
+            position: absolute;
+            background: linear-gradient(135deg, rgba(123, 44, 191, 0.1), rgba(199, 125, 255, 0.1));
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .float-1 {
+            width: 300px;
+            height: 300px;
+            top: 10%;
+            left: 5%;
+            animation: floatUpDown 6s ease-in-out infinite;
+        }
+        
+        .float-2 {
+            width: 250px;
+            height: 250px;
+            bottom: 15%;
+            right: 8%;
+            animation: floatUpDown 8s ease-in-out infinite reverse;
+        }
+        
+        .float-3 {
+            width: 200px;
+            height: 200px;
+            top: 50%;
+            right: 10%;
+            animation: floatLeftRight 7s ease-in-out infinite;
+        }
+        
+        @keyframes floatUpDown {
+            0%, 100% {
+                transform: translateY(0) rotate(0deg);
+            }
+            50% {
+                transform: translateY(-30px) rotate(5deg);
+            }
+        }
+        
+        @keyframes floatLeftRight {
+            0%, 100% {
+                transform: translateX(0) rotate(0deg);
+            }
+            50% {
+                transform: translateX(-30px) rotate(-5deg);
+            }
+        }
+        
+        /* Content Sections */
+        .section {
+            padding: 100px 5%;
+            max-width: 1400px;
+            margin: 0 auto;
+            position: relative;
+        }
+        
+        .section-title {
+            font-size: clamp(2rem, 5vw, 4rem);
+            margin-bottom: 40px;
+            opacity: 0;
+            transform: translateY(50px);
+        }
+        
+        /* Section with Side Images */
+        .content-with-images {
+            display: flex;
+            align-items: center;
+            gap: 50px;
+            margin: 100px 0;
+            position: relative;
+        }
+        
+        .content-text {
+            flex: 1;
+            z-index: 2;
+        }
+        
+        .content-text h2 {
+            font-size: clamp(2rem, 4vw, 3rem);
+            margin-bottom: 20px;
+        }
+        
+        .content-text p {
+            font-size: 1.2rem;
+            line-height: 1.8;
+            opacity: 0.8;
+        }
+        
+        .content-image {
+            flex: 1;
+            position: relative;
+        }
+        
+        .content-image-wrapper {
+            position: relative;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            transform: perspective(1000px) rotateY(-5deg);
+            transition: transform 0.5s ease;
+        }
+        
+        .content-image-wrapper:hover {
+            transform: perspective(1000px) rotateY(0deg) scale(1.05);
+        }
+        
+        .content-image-wrapper img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+        
+        .image-placeholder {
+            width: 100%;
+            height: 400px;
+            background: linear-gradient(135deg, #5A189A, #9D4EDD);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+        }
+        
+        /* Parallax Image Section */
+        .parallax-section {
+            height: 100vh;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .parallax-bg {
+            position: absolute;
+            width: 120%;
+            height: 120%;
+            top: -10%;
+            left: -10%;
+            background: linear-gradient(135deg, #2D1E80 0%, #7B2CBF 50%, #C77DFF 100%);
+            z-index: -1;
+        }
+        
+        .parallax-content {
+            text-align: center;
+            z-index: 2;
+        }
+        
+        /* Cards Grid */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 50px;
+        }
+        
+        .card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 40px;
+            opacity: 0;
+            transform: translateY(50px) rotateX(-10deg);
+            transform-style: preserve-3d;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(90, 24, 154, 0.1), rgba(199, 125, 255, 0.1));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .card:hover::before {
+            opacity: 1;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.08);
+        }
+        
+        .card-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            border-radius: 15px;
+            margin-bottom: 20px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .card h3 {
+            font-size: 24px;
+            margin-bottom: 15px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .card p {
+            opacity: 0.8;
+            line-height: 1.6;
+            position: relative;
+            z-index: 1;
+        }
+        
+        /* Horizontal Scroll Section */
+        .horizontal-scroll {
+            overflow: hidden;
+            padding: 100px 0;
+        }
+        
+        .horizontal-container {
+            display: flex;
+            gap: 50px;
+            padding: 0 5%;
+        }
+        
+        .horizontal-item {
+            min-width: 400px;
+            height: 500px;
+            background: linear-gradient(135deg, rgba(123, 44, 191, 0.1), rgba(199, 125, 255, 0.1));
+            border-radius: 20px;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .horizontal-item::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(157, 78, 221, 0.1) 0%, transparent 70%);
+            animation: rotate 20s linear infinite;
+        }
+        
+        /* Text Reveal Section */
+        .text-reveal {
+            padding: 200px 5%;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        
+        .reveal-text {
+            font-size: clamp(1.5rem, 4vw, 3rem);
+            line-height: 1.4;
+            font-weight: 300;
+        }
+        
+        .reveal-text span {
+            opacity: 0.2;
+            transition: opacity 0.5s ease;
+        }
+        
+        .reveal-text span.revealed {
+            opacity: 1;
+        }
+        
+        /* Footer */
+        footer {
+            padding: 50px 5%;
+            text-align: center;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+            
+            .horizontal-item {
+                min-width: 300px;
+                height: 400px;
+            }
+            
+            .cursor, .cursor-follower {
+                display: none;
+            }
+            
+            .side-image {
+                display: none;
+            }
+            
+            .floating-element {
+                display: none;
+            }
+            
+            .content-with-images {
+                flex-direction: column;
+            }
+            
+            .gradient-orb {
+                filter: blur(100px);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Background Effects -->
+    <div class="background-effects">
+        <!-- Gradient Orbs -->
+        <div class="gradient-orb orb-1"></div>
+        <div class="gradient-orb orb-2"></div>
+        <div class="gradient-orb orb-3"></div>
+        <div class="gradient-orb orb-4"></div>
+        
+        <!-- Geometric Shapes -->
+        <div class="geometric-shape shape-square"></div>
+        <div class="geometric-shape shape-triangle"></div>
+        <div class="geometric-shape shape-hexagon"></div>
+        
+        <!-- Particle Grid -->
+        <div class="particle-grid" id="particleGrid"></div>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="content-wrapper">
+        <!-- Custom Cursor -->
+        <div class="cursor"></div>
+        <div class="cursor-follower"></div>
+        
+        <!-- Progress Bar -->
+        <div class="progress-bar"></div>
+        
+        <!-- Navigation -->
+        <nav id="navbar">
+            <div class="nav-container">
+                <div class="logo">WARP</div>
+                <ul class="nav-links">
+                    <li><a href="#home">Home</a></li>
+                    <li><a href="#about">About</a></li>
+                    <li><a href="#services">Services</a></li>
+                    <li><a href="#work">Work</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                </ul>
+            </div>
+        </nav>
+        
+        <!-- Hero Section -->
+        <section class="hero" id="home">
+            <!-- Side Images -->
+            <div class="side-image side-image-left">
+                <div class="image-placeholder">Image 1</div>
+            </div>
+            <div class="side-image side-image-right">
+                <div class="image-placeholder">Image 2</div>
+            </div>
+            
+            <!-- Floating Elements -->
+            <div class="floating-element float-1"></div>
+            <div class="floating-element float-2"></div>
+            <div class="floating-element float-3"></div>
+            
+            <div class="hero-content">
+                <h1>
+                    <span>Welcome to</span><br>
+                    <span>The Future</span>
+                </h1>
+                <p class="hero-subtitle">Experience the power of advanced scroll animations</p>
+            </div>
+        </section>
+        
+        <!-- Content with Side Images -->
+        <section class="section">
+            <div class="content-with-images">
+                <div class="content-text">
+                    <h2>Dynamic Visual Experience</h2>
+                    <p>Our scroll animations create an immersive journey through your content. Every element is carefully choreographed to engage and delight your visitors as they explore your site.</p>
+                </div>
+                <div class="content-image">
+                    <div class="content-image-wrapper">
+                        <div class="image-placeholder">Featured Image</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="content-with-images" style="flex-direction: row-reverse;">
+                <div class="content-text">
+                    <h2>Parallax & Motion</h2>
+                    <p>Watch as images and elements move at different speeds, creating depth and dimension. Our GSAP-powered animations ensure smooth performance across all devices.</p>
+                </div>
+                <div class="content-image">
+                    <div class="content-image-wrapper">
+                        <div class="image-placeholder">Motion Image</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- About Section -->
+        <section class="section" id="about">
+            <h2 class="section-title">Scroll-Triggered Animations</h2>
+            <div class="cards-grid">
+                <div class="card">
+                    <div class="card-icon"></div>
+                    <h3>Smooth Parallax</h3>
+                    <p>Elements move at different speeds creating depth and dimension as you scroll through the page.</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon"></div>
+                    <h3>Reveal Effects</h3>
+                    <p>Content elegantly appears as it enters the viewport with customizable timing and easing.</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon"></div>
+                    <h3>Interactive Scroll</h3>
+                    <p>Scroll progress indicators and dynamic navigation enhance the user experience.</p>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Parallax Section -->
+        <section class="parallax-section">
+            <div class="parallax-bg"></div>
+            <div class="parallax-content">
+                <h2 style="font-size: 4rem;">Parallax Magic</h2>
+                <p style="font-size: 1.5rem; margin-top: 20px;">Watch the background move differently</p>
+            </div>
+        </section>
+        
+        <!-- Horizontal Scroll Section -->
+        <section class="horizontal-scroll" id="services">
+            <div class="horizontal-container">
+                <div class="horizontal-item">
+                    <h3>Design</h3>
+                    <p>Creating visually stunning and user-friendly interfaces that captivate your audience.</p>
+                </div>
+                <div class="horizontal-item">
+                    <h3>Development</h3>
+                    <p>Building robust and scalable web applications with cutting-edge technologies.</p>
+                </div>
+                <div class="horizontal-item">
+                    <h3>Animation</h3>
+                    <p>Bringing your website to life with smooth, engaging animations and interactions.</p>
+                </div>
+                <div class="horizontal-item">
+                    <h3>Optimization</h3>
+                    <p>Ensuring peak performance and lightning-fast load times for the best user experience.</p>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Text Reveal Section -->
+        <section class="text-reveal">
+            <p class="reveal-text">
+                <span>This text reveals itself </span>
+                <span>as you scroll down the page. </span>
+                <span>Each word becomes visible </span>
+                <span>creating an engaging </span>
+                <span>reading experience </span>
+                <span>that keeps users </span>
+                <span>interested and scrolling. </span>
+                <span>It's a powerful technique </span>
+                <span>for storytelling </span>
+                <span>and highlighting </span>
+                <span>important information.</span>
+            </p>
+        </section>
+        
+        <!-- Footer -->
+        <footer>
+            <p>&copy; 2024 WARP-Style Template. Powered by GSAP.</p>
+        </footer>
+    </div>
+    
+    <script>
+        // Register GSAP Plugins
+        gsap.registerPlugin(ScrollTrigger, TextPlugin);
+        
+        // Create Particle Grid
+        function createParticles() {
+            const particleGrid = document.getElementById('particleGrid');
+            const particleCount = 50;
+            
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.top = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 3 + 's';
+                particle.style.animationDuration = (Math.random() * 3 + 2) + 's';
+                particleGrid.appendChild(particle);
+            }
+        }
+        
+        createParticles();
+        
+        // Custom Cursor
+        if (window.innerWidth > 768) {
+            const cursor = document.querySelector('.cursor');
+            const cursorFollower = document.querySelector('.cursor-follower');
+            
+            document.addEventListener('mousemove', (e) => {
+                cursor.style.left = e.clientX + 'px';
+                cursor.style.top = e.clientY + 'px';
+                
+                setTimeout(() => {
+                    cursorFollower.style.left = e.clientX - 10 + 'px';
+                    cursorFollower.style.top = e.clientY - 10 + 'px';
+                }, 100);
+            });
+            
+            document.querySelectorAll('a, button').forEach(el => {
+                el.addEventListener('mouseenter', () => {
+                    cursor.style.transform = 'scale(1.5)';
+                    cursorFollower.style.transform = 'scale(1.5)';
+                });
+                el.addEventListener('mouseleave', () => {
+                    cursor.style.transform = 'scale(1)';
+                    cursorFollower.style.transform = 'scale(1)';
+                });
+            });
+        }
+        
+        // Progress Bar
+        gsap.to('.progress-bar', {
+            scaleX: 1,
+            ease: 'none',
+            scrollTrigger: {
+                trigger: 'body',
+                start: 'top top',
+                end: 'bottom bottom',
+                scrub: true
+            }
+        });
+        
+        // Navigation Scroll Effect
+        window.addEventListener('scroll', () => {
+            const navbar = document.getElementById('navbar');
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+        
+        // Hero Animation
+        const heroTimeline = gsap.timeline();
+        heroTimeline
+            .from('.hero h1 span', {
+                y: 100,
+                opacity: 0,
+                duration: 1,
+                stagger: 0.2,
+                ease: 'power3.out'
+            })
+            .to('.hero-subtitle', {
+                opacity: 1,
+                y: 0,
+                duration: 1,
+                ease: 'power3.out'
+            }, '-=0.5')
+            .from('.side-image', {
+                scale: 0,
+                opacity: 0,
+                duration: 1.5,
+                stagger: 0.2,
+                ease: 'power3.out'
+            }, '-=0.8')
+            .from('.floating-element', {
+                scale: 0,
+                opacity: 0,
+                duration: 1,
+                stagger: 0.1,
+                ease: 'power3.out'
+            }, '-=1');
+        
+        // Animate Background Orbs on Scroll
+        gsap.utils.toArray('.gradient-orb').forEach((orb, index) => {
+            gsap.to(orb, {
+                y: -100 * (index + 1),
+                x: 50 * (index % 2 === 0 ? 1 : -1),
+                scrollTrigger: {
+                    trigger: 'body',
+                    start: 'top top',
+                    end: 'bottom top',
+                    scrub: 1 + index * 0.5
+                }
+            });
+        });
+        
+        // Parallax Side Images
+        gsap.to('.side-image-left', {
+            yPercent: -30,
+            rotate: -10,
+            scrollTrigger: {
+                trigger: '.hero',
+                start: 'top top',
+                end: 'bottom top',
+                scrub: 1
+            }
+        });
+        
+        gsap.to('.side-image-right', {
+            yPercent: 40,
+            rotate: 10,
+            scrollTrigger: {
+                trigger: '.hero',
+                start: 'top top',
+                end: 'bottom top',
+                scrub: 1.5
+            }
+        });
+        
+        // Floating Elements Animation
+        gsap.to('.float-1', {
+            y: -200,
+            x: 100,
+            rotate: 15,
+            scrollTrigger: {
+                trigger: '.hero',
+                start: 'top top',
+                end: 'bottom top',
+                scrub: 2
+            }
+        });
+        
+        gsap.to('.float-2', {
+            y: 200,
+            x: -100,
+            rotate: -15,
+            scrollTrigger: {
+                trigger: '.hero',
+                start: 'top top',
+                end: 'bottom top',
+                scrub: 2.5
+            }
+        });
+        
+        gsap.to('.float-3', {
+            y: -150,
+            x: -50,
+            rotate: 20,
+            scrollTrigger: {
+                trigger: '.hero',
+                start: 'top top',
+                end: 'bottom top',
+                scrub: 1.8
+            }
+        });
+        
+        // Content Images Animation
+        gsap.utils.toArray('.content-image-wrapper').forEach((img, index) => {
+            gsap.from(img, {
+                scale: 0.8,
+                opacity: 0,
+                rotateY: index % 2 === 0 ? -30 : 30,
+                duration: 1.5,
+                scrollTrigger: {
+                    trigger: img,
+                    start: 'top 80%',
+                    end: 'bottom 20%',
+                    toggleActions: 'play none none reverse'
+                }
+            });
+        });
+        
+        // Section Title Animations
+        gsap.utils.toArray('.section-title').forEach(title => {
+            gsap.to(title, {
+                opacity: 1,
+                y: 0,
+                duration: 1,
+                ease: 'power3.out',
+                scrollTrigger: {
+                    trigger: title,
+                    start: 'top 80%',
+                    end: 'bottom 20%',
+                    toggleActions: 'play none none reverse'
+                }
+            });
+        });
+        
+        // Cards Animation
+        gsap.utils.toArray('.card').forEach((card, index) => {
+            gsap.to(card, {
+                opacity: 1,
+                y: 0,
+                rotateX: 0,
+                duration: 1,
+                delay: index * 0.1,
+                ease: 'power3.out',
+                scrollTrigger: {
+                    trigger: card,
+                    start: 'top 80%',
+                    end: 'bottom 20%',
+                    toggleActions: 'play none none reverse'
+                }
+            });
+        });
+        
+        // Parallax Effect
+        gsap.to('.parallax-bg', {
+            yPercent: -50,
+            ease: 'none',
+            scrollTrigger: {
+                trigger: '.parallax-section',
+                start: 'top bottom',
+                end: 'bottom top',
+                scrub: true
+            }
+        });
+        
+        // Horizontal Scroll
+        const horizontalSection = document.querySelector('.horizontal-container');
+        const horizontalScrollAmount = horizontalSection.scrollWidth - window.innerWidth;
+        
+        gsap.to(horizontalSection, {
+            x: -horizontalScrollAmount,
+            ease: 'none',
+            scrollTrigger: {
+                trigger: '.horizontal-scroll',
+                start: 'top top',
+                end: `+=${horizontalScrollAmount}`,
+                pin: true,
+                scrub: 1,
+                invalidateOnRefresh: true
+            }
+        });
+        
+        // Text Reveal on Scroll
+        const revealText = document.querySelector('.reveal-text');
+        const spans = revealText.querySelectorAll('span');
+        
+        ScrollTrigger.create({
+            trigger: revealText,
+            start: 'top 80%',
+            end: 'bottom 20%',
+            onUpdate: self => {
+                const progress = self.progress;
+                const numToReveal = Math.floor(progress * spans.length);
+                
+                spans.forEach((span, index) => {
+                    if (index < numToReveal) {
+                        span.classList.add('revealed');
+                    } else {
+                        span.classList.remove('revealed');
+                    }
+                });
+            }
+        });
+        
+        // Animate Geometric Shapes on Scroll
+        gsap.to('.shape-square', {
+            rotate: 180,
+            x: -100,
+            scrollTrigger: {
+                trigger: 'body',
+                start: 'top top',
+                end: 'bottom top',
+                scrub: 2
+            }
+        });
+        
+        gsap.to('.shape-triangle', {
+            rotate: -180,
+            y: -200,
+            scrollTrigger: {
+                trigger: 'body',
+                start: 'top top',
+                end: 'bottom top',
+                scrub: 3
+            }
+        });
+        
+        gsap.to('.shape-hexagon', {
+            rotate: 360,
+            x: 100,
+            y: -100,
+            scrollTrigger: {
+                trigger: 'body',
+                start: 'top top',
+                end: 'bottom top',
+                scrub: 2.5
+            }
+        });
+        
+        // Smooth Anchor Scrolling
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    gsap.to(window, {
+                        duration: 1,
+                        scrollTo: target,
+                        ease: 'power3.inOut'
+                    });
+                }
+            });
+        });
+        
+        // Refresh ScrollTrigger on resize
+        window.addEventListener('resize', () => {
+            ScrollTrigger.refresh();
+        });
+    </script>
+</body>
+</html>
