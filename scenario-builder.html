@@ -1,0 +1,1010 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Scenario Builder — ID Studio</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #1d3557;
+    --paper: #f1faee;
+    --cream: #a8dadc;
+    --accent: #e63946;
+    --accent2: #457b9d;
+    --muted: #457b9d;
+    --border: #c0dde0;
+    --success: #2d6a4f;
+    --card: #f5fbfc;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--paper);
+    color: var(--ink);
+    min-height: 100vh;
+  }
+
+  /* HEADER */
+  header {
+    border-bottom: 2px solid var(--ink);
+    padding: 1.2rem 2.5rem;
+    display: flex;
+    align-items: baseline;
+    gap: 1.5rem;
+    background: var(--paper);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  header h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.5rem;
+    font-weight: 900;
+    letter-spacing: -0.02em;
+  }
+
+  header span {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    border: 1px solid var(--border);
+    padding: 0.2rem 0.6rem;
+    border-radius: 2px;
+  }
+
+  /* LAYOUT */
+  .workspace {
+    display: grid;
+    grid-template-columns: 380px 1fr;
+    min-height: calc(100vh - 61px);
+  }
+
+  /* SIDEBAR / FORM */
+  .sidebar {
+    border-right: 2px solid var(--ink);
+    padding: 2rem;
+    background: var(--cream);
+    display: flex;
+    flex-direction: column;
+    gap: 1.6rem;
+  }
+
+  .sidebar-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    padding-bottom: 0.8rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+
+  label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--muted);
+  }
+
+  input, select, textarea {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.9rem;
+    background: var(--paper);
+    border: 1.5px solid var(--border);
+    border-radius: 3px;
+    padding: 0.65rem 0.85rem;
+    color: var(--ink);
+    transition: border-color 0.15s;
+    width: 100%;
+  }
+
+  input:focus, select:focus, textarea:focus {
+    outline: none;
+    border-color: var(--accent);
+  }
+
+  textarea {
+    resize: vertical;
+    min-height: 80px;
+    line-height: 1.5;
+  }
+
+  select {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23457b9d' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.85rem center;
+    padding-right: 2.2rem;
+    cursor: pointer;
+  }
+
+  .generate-btn {
+    background: var(--accent);
+    color: white;
+    border: none;
+    border-radius: 3px;
+    padding: 0.85rem 1.5rem;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.8rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background 0.15s, transform 0.1s;
+    margin-top: 0.4rem;
+  }
+
+  .generate-btn:hover:not(:disabled) {
+    background: #a8360a;
+    transform: translateY(-1px);
+  }
+
+  .generate-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .cost-note {
+    font-size: 0.75rem;
+    color: var(--muted);
+    line-height: 1.5;
+    border-top: 1px solid var(--border);
+    padding-top: 1rem;
+    margin-top: auto;
+  }
+
+  /* MAIN CONTENT */
+  .main {
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* TABS */
+  .tabs {
+    display: flex;
+    border-bottom: 2px solid var(--ink);
+    background: var(--paper);
+  }
+
+  .tab {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    padding: 0.9rem 1.8rem;
+    cursor: pointer;
+    border: none;
+    background: none;
+    color: var(--muted);
+    border-bottom: 3px solid transparent;
+    margin-bottom: -2px;
+    transition: all 0.15s;
+  }
+
+  .tab.active {
+    color: var(--accent);
+    border-bottom-color: var(--accent);
+  }
+
+  .tab:hover:not(.active) {
+    color: var(--ink);
+  }
+
+  .panel {
+    display: none;
+    flex: 1;
+    padding: 2rem 2.5rem;
+    overflow-y: auto;
+  }
+
+  .panel.active { display: block; }
+
+  /* EMPTY STATE */
+  .empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 400px;
+    gap: 1rem;
+    color: var(--muted);
+    text-align: center;
+  }
+
+  .empty-state .icon {
+    font-size: 3rem;
+    opacity: 0.3;
+  }
+
+  .empty-state p {
+    font-size: 0.9rem;
+    max-width: 280px;
+    line-height: 1.6;
+  }
+
+  /* LOADING */
+  .loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 400px;
+    gap: 1.5rem;
+  }
+
+  .loading-dots {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .loading-dots span {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--accent);
+    animation: bounce 1.2s infinite;
+  }
+
+  .loading-dots span:nth-child(2) { animation-delay: 0.2s; }
+  .loading-dots span:nth-child(3) { animation-delay: 0.4s; }
+
+  @keyframes bounce {
+    0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
+    30% { transform: translateY(-8px); opacity: 1; }
+  }
+
+  .loading p {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--muted);
+    letter-spacing: 0.08em;
+  }
+
+  /* SCENARIO PREVIEW */
+  .scenario-header {
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 2px solid var(--ink);
+  }
+
+  .scenario-header .bloom-tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: white;
+    background: var(--accent2);
+    padding: 0.25rem 0.7rem;
+    border-radius: 2px;
+    display: inline-block;
+    margin-bottom: 0.75rem;
+  }
+
+  .scenario-header h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.6rem;
+    font-weight: 700;
+    line-height: 1.3;
+    margin-bottom: 0.5rem;
+  }
+
+  .scenario-header .meta {
+    font-size: 0.82rem;
+    color: var(--muted);
+  }
+
+  /* SCENE CARDS */
+  .scene-flow {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .scene-card {
+    background: var(--card);
+    border: 1.5px solid var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+    transition: box-shadow 0.15s;
+  }
+
+  .scene-card:hover {
+    box-shadow: 4px 4px 0 var(--ink);
+  }
+
+  .scene-card.active-scene {
+    border-color: var(--accent);
+    box-shadow: 4px 4px 0 var(--accent);
+  }
+
+  .scene-card.visited {
+    opacity: 0.6;
+  }
+
+  .scene-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem 1.2rem;
+    background: var(--cream);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .scene-id {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.68rem;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+
+  .scene-type {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    padding: 0.2rem 0.6rem;
+    border-radius: 2px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  .scene-type.decision { background: #fff3cd; color: #856404; }
+  .scene-type.consequence { background: #d1ecf1; color: #0c5460; }
+  .scene-type.outcome { background: #d4edda; color: #155724; }
+  .scene-type.outcome.fail { background: #f8d7da; color: #721c24; }
+
+  .scene-body {
+    padding: 1.2rem;
+  }
+
+  .scene-context {
+    font-size: 0.78rem;
+    font-family: 'DM Mono', monospace;
+    color: var(--muted);
+    margin-bottom: 0.6rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  .scene-text {
+    font-size: 0.95rem;
+    line-height: 1.7;
+    margin-bottom: 1rem;
+  }
+
+  .choices {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .choice-btn {
+    text-align: left;
+    padding: 0.75rem 1rem;
+    border: 1.5px solid var(--border);
+    border-radius: 3px;
+    background: var(--paper);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.88rem;
+    cursor: pointer;
+    line-height: 1.5;
+    transition: all 0.15s;
+    color: var(--ink);
+  }
+
+  .choice-btn:hover {
+    border-color: var(--accent2);
+    background: #eef3f8;
+  }
+
+  .choice-btn.selected-correct {
+    border-color: var(--success);
+    background: #edf7f1;
+    color: var(--success);
+  }
+
+  .choice-btn.selected-incorrect {
+    border-color: #c0392b;
+    background: #fdf0ef;
+    color: #c0392b;
+  }
+
+  .choice-btn.disabled-btn {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+
+  .feedback-box {
+    margin-top: 0.75rem;
+    padding: 0.85rem 1rem;
+    border-radius: 3px;
+    font-size: 0.85rem;
+    line-height: 1.6;
+  }
+
+  .feedback-box.correct {
+    background: #edf7f1;
+    border-left: 3px solid var(--success);
+    color: #1a4d35;
+  }
+
+  .feedback-box.incorrect {
+    background: #fdf0ef;
+    border-left: 3px solid #c0392b;
+    color: #7b1a12;
+  }
+
+  .continue-btn {
+    margin-top: 0.75rem;
+    padding: 0.6rem 1.2rem;
+    border: 1.5px solid var(--accent2);
+    border-radius: 3px;
+    background: none;
+    color: var(--accent2);
+    font-family: 'DM Mono', monospace;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .continue-btn:hover {
+    background: var(--accent2);
+    color: white;
+  }
+
+  .reset-btn {
+    margin-top: 2rem;
+    padding: 0.7rem 1.5rem;
+    border: 1.5px solid var(--border);
+    border-radius: 3px;
+    background: none;
+    color: var(--muted);
+    font-family: 'DM Mono', monospace;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .reset-btn:hover {
+    border-color: var(--ink);
+    color: var(--ink);
+  }
+
+  /* FINAL OUTCOME */
+  .outcome-card {
+    padding: 2rem;
+    border: 2px solid var(--ink);
+    border-radius: 4px;
+    text-align: center;
+    margin-top: 1rem;
+  }
+
+  .outcome-card.pass {
+    border-color: var(--success);
+    background: #edf7f1;
+  }
+
+  .outcome-card.fail {
+    border-color: #c0392b;
+    background: #fdf0ef;
+  }
+
+  .outcome-card h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.3rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .outcome-card p {
+    font-size: 0.9rem;
+    line-height: 1.7;
+    color: var(--muted);
+  }
+
+  /* JSON PANEL */
+  .json-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+  }
+
+  .json-toolbar h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+  }
+
+  .copy-btn {
+    padding: 0.5rem 1rem;
+    border: 1.5px solid var(--border);
+    border-radius: 3px;
+    background: none;
+    color: var(--muted);
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .copy-btn:hover {
+    border-color: var(--ink);
+    color: var(--ink);
+  }
+
+  .copy-btn.copied {
+    border-color: var(--success);
+    color: var(--success);
+  }
+
+  pre {
+    background: var(--ink);
+    color: #a8d8a8;
+    padding: 1.5rem;
+    border-radius: 4px;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.75rem;
+    line-height: 1.7;
+    overflow-x: auto;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+
+  .error-msg {
+    background: #fdf0ef;
+    border: 1.5px solid #c0392b;
+    border-radius: 3px;
+    padding: 1rem 1.2rem;
+    font-size: 0.88rem;
+    color: #7b1a12;
+    line-height: 1.6;
+  }
+
+  /* PROGRESS TRACKER */
+  .progress-bar {
+    display: flex;
+    gap: 0.3rem;
+    margin-bottom: 1.5rem;
+    align-items: center;
+  }
+
+  .progress-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--border);
+    transition: background 0.2s;
+  }
+
+  .progress-dot.done { background: var(--success); }
+  .progress-dot.active { background: var(--accent); }
+
+  .progress-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--muted);
+    margin-left: 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Scenario Builder</h1>
+  <span>ID Studio · Powered by Claude</span>
+</header>
+
+<div class="workspace">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-title">Scenario Parameters</div>
+
+    <div class="field">
+      <label>Job Role</label>
+      <input type="text" id="jobRole" placeholder="e.g. Pharmacy Technician" />
+    </div>
+
+    <div class="field">
+      <label>Industry / Context</label>
+      <input type="text" id="industry" placeholder="e.g. Retail pharmacy, hospital" />
+    </div>
+
+    <div class="field">
+      <label>Common Mistake / Performance Gap</label>
+      <textarea id="perfGap" placeholder="e.g. Fails to verify patient identity before dispensing controlled substances"></textarea>
+    </div>
+
+    <div class="field">
+      <label>Bloom's Level Target</label>
+      <select id="blooms">
+        <option value="">— Select level —</option>
+        <option value="Remember">Remember — Recall facts and basic concepts</option>
+        <option value="Understand">Understand — Explain ideas or concepts</option>
+        <option value="Apply">Apply — Use information in new situations</option>
+        <option value="Analyze">Analyze — Draw connections, break down info</option>
+        <option value="Evaluate">Evaluate — Justify decisions, critique approaches</option>
+        <option value="Create">Create — Produce new or original work</option>
+      </select>
+    </div>
+
+    <button class="generate-btn" id="generateBtn" onclick="generateScenario()">
+      ▶ Generate Scenario
+    </button>
+
+    <div class="cost-note">
+      Uses Claude Haiku 4.5 · ~$0.003–0.006 per generation<br>
+      Full branching tree with 3 decision points, consequences, and feedback
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+    <div class="tabs">
+      <button class="tab active" onclick="switchTab('preview', this)">▸ Interactive Preview</button>
+      <button class="tab" onclick="switchTab('json', this)">{ } JSON Export</button>
+    </div>
+
+    <div class="panel active" id="panel-preview">
+      <div class="empty-state" id="emptyPreview">
+        <div class="icon">⬡</div>
+        <p>Fill in the parameters and generate a scenario to see the interactive learner preview here.</p>
+      </div>
+      <div id="scenarioPreview" style="display:none;"></div>
+    </div>
+
+    <div class="panel" id="panel-json">
+      <div class="empty-state" id="emptyJson">
+        <div class="icon">{ }</div>
+        <p>Your structured JSON output will appear here, ready to copy into Storyline or your authoring tool workflow.</p>
+      </div>
+      <div id="jsonOutput" style="display:none;">
+        <div class="json-toolbar">
+          <h3>Structured JSON Export</h3>
+          <button class="copy-btn" id="copyBtn" onclick="copyJson()">Copy JSON</button>
+        </div>
+        <pre id="jsonPre"></pre>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+let scenarioData = null;
+let currentSceneId = null;
+let visitedScenes = new Set();
+let choiceHistory = [];
+
+function switchTab(tabName, el) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('panel-' + tabName).classList.add('active');
+}
+
+async function generateScenario() {
+  const jobRole = document.getElementById('jobRole').value.trim();
+  const industry = document.getElementById('industry').value.trim();
+  const perfGap = document.getElementById('perfGap').value.trim();
+  const blooms = document.getElementById('blooms').value;
+
+  if (!jobRole || !industry || !perfGap || !blooms) {
+    alert('Please fill in all four fields before generating.');
+    return;
+  }
+
+  const btn = document.getElementById('generateBtn');
+  btn.disabled = true;
+  btn.textContent = '⏳ Generating...';
+
+  // Show loading
+  document.getElementById('emptyPreview').style.display = 'none';
+  document.getElementById('scenarioPreview').style.display = 'none';
+  document.getElementById('emptyJson').style.display = 'none';
+  document.getElementById('jsonOutput').style.display = 'none';
+
+  const loadingHTML = `<div class="loading" id="loadingState">
+    <div class="loading-dots"><span></span><span></span><span></span></div>
+    <p>Building branching scenario...</p>
+  </div>`;
+  document.getElementById('scenarioPreview').innerHTML = loadingHTML;
+  document.getElementById('scenarioPreview').style.display = 'block';
+
+  const systemPrompt = `You are an expert instructional designer. Generate a realistic, full-branching scenario-based learning experience in JSON format only. No markdown, no explanation — pure valid JSON.
+
+The scenario must:
+- Target Bloom's Taxonomy level: ${blooms}
+- Address the specific performance gap provided
+- Have exactly 3 decision points (scenes with type "decision")
+- Each decision point has exactly 3 choices
+- Choices lead to consequence scenes that feed into the NEXT decision point OR a final outcome
+- The branching structure: Decision 1 → Consequence → Decision 2 → Consequence → Decision 3 → Final Outcome
+- Poor choices lead toward negative outcomes; good choices lead toward positive outcomes
+- Consequences must feel realistic and specific to the industry
+- Include rich contextual setup (character names, setting, time pressure)
+- Each choice must have feedback explaining WHY it was correct or incorrect in instructional terms
+
+Return ONLY this JSON structure:
+{
+  "title": "string",
+  "bloomsLevel": "string",
+  "jobRole": "string",
+  "industry": "string",
+  "performanceGap": "string",
+  "learningObjective": "string",
+  "character": { "name": "string", "role": "string", "context": "string" },
+  "scenes": [
+    {
+      "id": "scene_1",
+      "type": "decision",
+      "setting": "string describing where/when",
+      "text": "string — the scenario narrative the learner reads",
+      "choices": [
+        {
+          "id": "c1a",
+          "text": "string — the choice text",
+          "isCorrect": true or false,
+          "feedback": "string — instructional feedback",
+          "leadsTo": "scene_id_string"
+        }
+      ]
+    },
+    {
+      "id": "scene_consequence_1a",
+      "type": "consequence",
+      "text": "string — what happens as a result of the choice",
+      "leadsTo": "scene_2"
+    },
+    ...more scenes...
+    {
+      "id": "scene_outcome_pass",
+      "type": "outcome",
+      "result": "pass",
+      "text": "string — final outcome narrative",
+      "summary": "string — what the learner demonstrated"
+    },
+    {
+      "id": "scene_outcome_fail",
+      "type": "outcome",
+      "result": "fail",
+      "text": "string — final outcome narrative",
+      "summary": "string — what the learner needs to revisit"
+    }
+  ]
+}`;
+
+  const userPrompt = `Generate a scenario-based learning experience with these parameters:
+- Job Role: ${jobRole}
+- Industry/Context: ${industry}
+- Performance Gap: ${perfGap}
+- Bloom's Level: ${blooms}
+
+Make it realistic, specific, and instructionally sound.`;
+
+  try {
+    // Route through the server-side Netlify function to keep the API key secure
+    const response = await fetch('/.netlify/functions/generate-scenario', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-haiku-4-5-20251001',
+        max_tokens: 4000,
+        system: systemPrompt,
+        messages: [{ role: 'user', content: userPrompt }]
+      })
+    });
+
+    const data = await response.json();
+
+    if (data.error) {
+      throw new Error(data.error.message || 'API error');
+    }
+
+    const rawText = data.content[0].text.trim();
+    // Strip any accidental markdown fences
+    const clean = rawText.replace(/^```json\s*/i, '').replace(/```\s*$/i, '').trim();
+    scenarioData = JSON.parse(clean);
+
+    renderPreview();
+    renderJson();
+
+  } catch (err) {
+    document.getElementById('scenarioPreview').innerHTML = `
+      <div class="error-msg">
+        <strong>Generation failed.</strong><br>
+        ${err.message}<br><br>
+        Make sure the <code>ANTHROPIC_API_KEY</code> environment variable is set in your Netlify site settings.
+      </div>`;
+  }
+
+  btn.disabled = false;
+  btn.textContent = '▶ Generate Scenario';
+}
+
+function renderPreview() {
+  visitedScenes = new Set();
+  choiceHistory = [];
+
+  const s = scenarioData;
+  const firstScene = s.scenes.find(sc => sc.id === 'scene_1') || s.scenes[0];
+  currentSceneId = firstScene.id;
+
+  const decisionScenes = s.scenes.filter(sc => sc.type === 'decision');
+
+  let html = `
+    <div class="scenario-header">
+      <div class="bloom-tag">${s.bloomsLevel} — Bloom's Taxonomy</div>
+      <h2>${s.title}</h2>
+      <div class="meta">${s.jobRole} · ${s.industry}</div>
+      <div class="meta" style="margin-top:0.4rem; font-size:0.8rem; color:var(--muted);">
+        <strong>Learning Objective:</strong> ${s.learningObjective}
+      </div>
+    </div>
+    <div id="progressBar" class="progress-bar">
+      ${decisionScenes.map((_, i) => `<div class="progress-dot" id="dot_${i}"></div>`).join('')}
+      <span class="progress-label">Decision Points</span>
+    </div>
+    <div class="scene-flow" id="sceneFlow"></div>
+    <button class="reset-btn" onclick="resetPreview()" style="display:none;" id="resetBtn">↺ Start Over</button>
+  `;
+
+  document.getElementById('scenarioPreview').innerHTML = html;
+  document.getElementById('emptyPreview').style.display = 'none';
+  document.getElementById('scenarioPreview').style.display = 'block';
+
+  renderScene(currentSceneId);
+}
+
+function renderScene(sceneId) {
+  const scene = scenarioData.scenes.find(s => s.id === sceneId);
+  if (!scene) return;
+
+  const flow = document.getElementById('sceneFlow');
+  const existing = document.getElementById('card_' + sceneId);
+  if (existing) {
+    existing.classList.add('active-scene');
+    existing.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    return;
+  }
+
+  let typeLabel = scene.type;
+  let typeFail = scene.result === 'fail' ? ' fail' : '';
+
+  let bodyHTML = `<p class="scene-text">${scene.text}</p>`;
+
+  if (scene.setting) {
+    bodyHTML = `<p class="scene-context">📍 ${scene.setting}</p>` + bodyHTML;
+  }
+
+  if (scene.type === 'decision' && scene.choices) {
+    bodyHTML += `<div class="choices" id="choices_${sceneId}">`;
+    scene.choices.forEach(ch => {
+      bodyHTML += `<button class="choice-btn" id="choice_${ch.id}" onclick="selectChoice('${sceneId}', '${ch.id}')">${ch.text}</button>`;
+    });
+    bodyHTML += `</div><div id="feedback_${sceneId}"></div>`;
+  }
+
+  if (scene.type === 'consequence') {
+    bodyHTML += `<button class="continue-btn" onclick="continueFrom('${scene.leadsTo}')">Continue →</button>`;
+  }
+
+  if (scene.type === 'outcome') {
+    const cls = scene.result === 'pass' ? 'pass' : 'fail';
+    const icon = scene.result === 'pass' ? '✓' : '✗';
+    bodyHTML = `<div class="outcome-card ${cls}">
+      <h3>${icon} ${scene.result === 'pass' ? 'Scenario Complete' : 'Scenario Ended'}</h3>
+      <p>${scene.text}</p>
+      ${scene.summary ? `<p style="margin-top:0.75rem; font-style:italic;">${scene.summary}</p>` : ''}
+    </div>`;
+    document.getElementById('resetBtn').style.display = 'inline-block';
+  }
+
+  const card = document.createElement('div');
+  card.className = 'scene-card active-scene';
+  card.id = 'card_' + sceneId;
+  card.innerHTML = `
+    <div class="scene-header">
+      <span class="scene-id">${sceneId.replace(/_/g, ' ')}</span>
+      <span class="scene-type ${scene.type}${typeFail}">${typeLabel}${scene.result ? ' · ' + scene.result : ''}</span>
+    </div>
+    <div class="scene-body">${bodyHTML}</div>
+  `;
+
+  // Remove active from previous
+  document.querySelectorAll('.scene-card.active-scene').forEach(c => c.classList.remove('active-scene'));
+  flow.appendChild(card);
+
+  card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  updateProgress(sceneId);
+}
+
+function selectChoice(sceneId, choiceId) {
+  const scene = scenarioData.scenes.find(s => s.id === sceneId);
+  const choice = scene.choices.find(c => c.id === choiceId);
+
+  // Disable all choices
+  scene.choices.forEach(ch => {
+    const btn = document.getElementById('choice_' + ch.id);
+    if (btn) btn.classList.add('disabled-btn');
+  });
+
+  // Highlight selected
+  const selectedBtn = document.getElementById('choice_' + choiceId);
+  if (selectedBtn) {
+    selectedBtn.classList.add(choice.isCorrect ? 'selected-correct' : 'selected-incorrect');
+  }
+
+  // Show feedback
+  const feedbackDiv = document.getElementById('feedback_' + sceneId);
+  if (feedbackDiv) {
+    feedbackDiv.innerHTML = `
+      <div class="feedback-box ${choice.isCorrect ? 'correct' : 'incorrect'}">
+        ${choice.isCorrect ? '✓ ' : '✗ '}${choice.feedback}
+      </div>
+      <button class="continue-btn" onclick="continueFrom('${choice.leadsTo}')">
+        ${choice.isCorrect ? 'Continue →' : 'See what happens →'}
+      </button>
+    `;
+  }
+
+  choiceHistory.push({ sceneId, choiceId, correct: choice.isCorrect });
+}
+
+function continueFrom(nextSceneId) {
+  renderScene(nextSceneId);
+}
+
+function updateProgress(sceneId) {
+  const decisionScenes = scenarioData.scenes.filter(s => s.type === 'decision');
+  decisionScenes.forEach((scene, i) => {
+    const dot = document.getElementById('dot_' + i);
+    if (!dot) return;
+    if (scene.id === sceneId) {
+      dot.className = 'progress-dot active';
+    } else if (document.getElementById('card_' + scene.id)) {
+      dot.className = 'progress-dot done';
+    }
+  });
+}
+
+function resetPreview() {
+  renderPreview();
+}
+
+function renderJson() {
+  document.getElementById('emptyJson').style.display = 'none';
+  document.getElementById('jsonOutput').style.display = 'block';
+  document.getElementById('jsonPre').textContent = JSON.stringify(scenarioData, null, 2);
+}
+
+function copyJson() {
+  const text = document.getElementById('jsonPre').textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.getElementById('copyBtn');
+    btn.textContent = '✓ Copied!';
+    btn.classList.add('copied');
+    setTimeout(() => {
+      btn.textContent = 'Copy JSON';
+      btn.classList.remove('copied');
+    }, 2000);
+  });
+}
+</script>
+</body>
+</html>
